@@ -164,11 +164,17 @@ DELETE FROM messages WHERE id = <MESSAGE_ID>
 ===========================================================================
    
 
-DELETE FROM chat_user WHERE chat_id=<CHAT_ID> AND user_id=<user_ID>
+DELETE FROM chat_user WHERE chat_id = <CHAT_ID> AND user_id=<user_ID>
 
 ===========================================================================
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Другие запросы
+===========================================================================
+SELECT m.* FROM
+    (SELECT chat_id FROM chat_user WHERE user_id=<USER_ID>) cu
+        INNER JOIN (SELECT * FROM messages ORDER BY date_create DESC) as m ON (cu.chat_id=m.chat_id)
+ORDER BY m.date_create
+    возвращаем все сообщения в которых брал участие юзер
 ===========================================================================
 SELECT m.message, m.date_create FROM `messages` m WHERE m.chat_id=<CHAT_ID> ORDER BY id DESC LIMIT 1
 выбирает последнее сообщение чата если указать id чата
@@ -180,18 +186,8 @@ SELECT cu.chat_id, m.message, m.date_create from messages m
 SELECT cu.chat_id FROM chat_user cu Where user_id = <USER_ID>
 возвращает все чаты в которых участвовал user_id = <USER_ID>
 ===========================================================================
-SELECT cu.chat_id, m.message, m.date_create FROM messages m
-INNER JOIN ( SELECT cu.chat_id FROM chat_user cu Where user_id = <USER_ID> ) cu ON ( m.chat_id = cu.chat_id)
-возвращает все сообщения по юзер_ід
-===========================================================================
 SELECT chat_id, message, max(date_created) as date_create FROM messages GROUP BY chat_id ORDER BY date_create DESC LIMIT 50
 получаем последних  50 сообщений
-===========================================================================
-SELECT m.* FROM
-(SELECT chat_id FROM chat_user WHERE user_id=<USER_ID>) cu
-INNER JOIN (SELECT * FROM messages ORDER BY date_create DESC) as m ON (cu.chat_id=m.chat_id)
-ORDER BY m.date_create
-возвращаем все сообщения в которых брал участие юзер
 ===========================================================================
 SELECT cu.*, u.name FROM chat_user AS cu
 INNER JOIN users AS u ON (cu.user_id = u.id)
@@ -201,17 +197,4 @@ INNER JOIN chat_user AS cl ON (cu.chat_id = cl.chat_id) WHERE cl.user_id=2
 ===========================================================================
 DELETE FROM users WHERE user_id=<USER_ID>
 Запрос на удаление пользователя
-===========================================================================
-DELETE FROM chat_user WHERE chat_id=<CHAT_ID> AND user_id=<USER_ID>
-запрос на удаление пользователя из чата
-===========================================================================
-UPDATE messages m SET message=<MESSAGE> WHERE m.id=<MESSAGE_ID>;
-Оновлює редактований меседж
-Обновляет редактированный меседж
-===========================================================================
-UPDATE users u SET name=<NAME> WHERE u.id=<USER_ID>;
-Обновляет данные пользователя
-===========================================================================
-UPDATE chats ch SET title=<TITLE> WHERE ch.id=<CHAT_ID>;
-Обновляет название чата
-===========================================================================
+=
